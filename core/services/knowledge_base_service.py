@@ -60,3 +60,11 @@ class KnowledgeBaseService:
     def check_knowledge_base(self) -> Dict:
         """检查知识库状态"""
         return self.collection_repository.check_collection()
+    
+    def list_collections(self) -> List[str]:
+        """列出所有集合"""
+        return self.collection_repository.list_collections()
+    
+    def describe_collection(self, collection_name: str) -> Dict:
+        """获取集合详细信息"""
+        return self.collection_repository.describe_collection(collection_name)

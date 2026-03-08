@@ -109,3 +109,29 @@ class CollectionRepository(CollectionInterface):
         except Exception as e:
             print(f"检查集合状态失败: {e}")
             raise KnowledgeBaseError(f"检查集合状态失败: {e}")
+    
+    def list_collections(self) -> List[str]:
+        """列出所有集合"""
+        try:
+            collections = self.client.list_collections()
+            print(f"当前集合列表：{collections}")
+            return collections
+        except Exception as e:
+            print(f"列出集合失败: {e}")
+            raise KnowledgeBaseError(f"列出集合失败: {e}")
+    
+    def describe_collection(self, collection_name: str) -> Dict:
+        """获取集合详细信息"""
+        try:
+            if not self.client.has_collection(collection_name=collection_name):
+                return {
+                    "exists": False,
+                    "message": f"集合 '{collection_name}' 不存在"
+                }
+            
+            collection_info = self.client.describe_collection(collection_name=collection_name)
+            print(f"集合 '{collection_name}' 详细信息: {collection_info}")
+            return collection_info
+        except Exception as e:
+            print(f"获取集合详细信息失败: {e}")
+            raise KnowledgeBaseError(f"获取集合详细信息失败: {e}")

@@ -141,11 +141,119 @@ function loadDocumentStats() {
     `;
 }
 
+// 加载集合列表
+async function loadCollectionList() {
+    try {
+        addLog('加载集合列表...');
+        const data = await apiCall('/collections');
+        const collectionList = document.querySelector('#collection-list tbody');
+        
+        if (collectionList) {
+            collectionList.innerHTML = '';
+            
+            if (data.collections && data.collections.length > 0) {
+                data.collections.forEach(collection => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">${collection}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <button class="btn btn-primary btn-sm" onclick="describeCollection('${collection}')">
+                                <i class="fa fa-info-circle mr-1"></i> 详情
+                            </button>
+                        </td>
+                    `;
+                    collectionList.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="2" class="px-6 py-4 text-center text-gray-500">
+                        暂无集合
+                    </td>
+                `;
+                collectionList.appendChild(row);
+            }
+        }
+        
+        addLog('集合列表加载成功', 'success');
+    } catch (error) {
+        addLog('加载集合列表失败', 'error');
+    }
+}
+
+// 获取集合详细信息
+async function describeCollection(collectionName) {
+    try {
+        addLog(`获取集合 ${collectionName} 详细信息...`);
+        const data = await apiCall(`/collections/${collectionName}`);
+        
+        // 显示集合详细信息
+        let infoHtml = `<h3 class="font-medium text-dark mb-2">集合 ${collectionName} 详细信息</h3>`;
+        
+        if (data.exists === false) {
+            infoHtml += `<p class="text-red-600">${data.message}</p>`;
+        } else {
+            infoHtml += `
+                <div class="space-y-2 text-sm">
+                    <p><strong>集合名称:</strong> ${data.collection_name}</p>
+                    <p><strong>自动 ID:</strong> ${data.auto_id}</p>
+                    <p><strong>分片数:</strong> ${data.num_shards}</p>
+                    <p><strong>描述:</strong> ${data.description || '无'}</p>
+                    <p><strong>集合 ID:</strong> ${data.collection_id}</p>
+                    <p><strong>一致性级别:</strong> ${data.consistency_level}</p>
+                    <p><strong>分区数:</strong> ${data.num_partitions}</p>
+                    <p><strong>启用动态字段:</strong> ${data.enable_dynamic_field}</p>
+                    <p><strong>字段:</strong></p>
+                    <ul class="list-disc pl-4">
+                        ${data.fields.map(field => `
+                            <li>
+                                <strong>${field.name}</strong> (${field.type})
+                                ${field.is_primary ? ' [主键]' : ''}
+                                ${field.params.dim ? ` - 维度: ${field.params.dim}` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+        
+        // 创建模态框
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4">
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-dark">集合详细信息</h2>
+                    <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    ${infoHtml}
+                </div>
+                <div class="p-4 border-t flex justify-end">
+                    <button onclick="this.closest('.fixed').remove()" class="btn bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        addLog(`获取集合 ${collectionName} 详细信息成功`, 'success');
+    } catch (error) {
+        addLog(`获取集合 ${collectionName} 详细信息失败`, 'error');
+    }
+}
+
 // 刷新所有状态
 async function refreshAllStatus() {
     addLog('刷新所有状态...');
     await Promise.all([
         loadDatabaseList(),
+        loadCollectionList(),
         loadDatabaseStatus(),
         loadKnowledgeBaseStatus(),
         loadDocumentStats()

@@ -25,3 +25,13 @@ class CollectionInterface(ABC):
     def check_collection(self) -> Dict:
         """检查集合状态"""
         pass
+    
+    @abstractmethod
+    def list_collections(self) -> List[str]:
+        """列出所有集合"""
+        pass
+    
+    @abstractmethod
+    def describe_collection(self, collection_name: str) -> Dict:
+        """获取集合详细信息"""
+        pass

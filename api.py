@@ -131,6 +131,30 @@ async def delete_database():
     except DatabaseError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# 列出所有集合
+@app.get("/collections")
+async def list_collections():
+    """
+    列出所有集合
+    """
+    try:
+        collections = kb_service.list_collections()
+        return {"collections": collections}
+    except KnowledgeBaseError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 获取集合详细信息
+@app.get("/collections/{collection_name}")
+async def describe_collection(collection_name: str):
+    """
+    获取集合详细信息
+    """
+    try:
+        collection_info = kb_service.describe_collection(collection_name)
+        return collection_info
+    except KnowledgeBaseError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     uvicorn.run(
         "api:app",
