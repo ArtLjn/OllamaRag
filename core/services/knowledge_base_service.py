@@ -27,9 +27,9 @@ class KnowledgeBaseService:
         """列出所有数据库"""
         return self.database_repository.list_databases()
     
-    def create_knowledge_base(self) -> bool:
+    def create_knowledge_base(self, collection_name: str = None) -> bool:
         """创建知识库"""
-        return self.collection_repository.create_collection()
+        return self.collection_repository.create_collection(collection_name)
     
     def delete_knowledge_base(self) -> bool:
         """删除知识库"""
@@ -68,3 +68,34 @@ class KnowledgeBaseService:
     def describe_collection(self, collection_name: str) -> Dict:
         """获取集合详细信息"""
         return self.collection_repository.describe_collection(collection_name)
+    
+    def list_knowledge_bases(self) -> List[Dict]:
+        """获取知识库列表"""
+        collections = self.collection_repository.list_collections()
+        knowledge_bases = []
+        for collection_name in collections:
+            try:
+                info = self.collection_repository.describe_collection(collection_name)
+                knowledge_bases.append({
+                    "collection_name": collection_name,
+                    "description": info.get("description", ""),
+                    "document_count": info.get("document_count", 0),
+                    "created_at": info.get("created_at", ""),
+                    "dimension": info.get("dimension", 1024)
+                })
+            except Exception as e:
+                print(f"获取知识库信息失败: {collection_name}")
+                print(f"错误信息: {e}")
+                continue
+        return knowledge_bases
+    
+    def get_knowledge_base_info(self, collection_name: str) -> Dict:
+        """获取知识库信息"""
+        info = self.collection_repository.describe_collection(collection_name)
+        return {
+            "collection_name": collection_name,
+            "description": info.get("description", ""),
+            "document_count": info.get("document_count", 0),
+            "created_at": info.get("created_at", ""),
+            "dimension": info.get("dimension", 1024)
+        }

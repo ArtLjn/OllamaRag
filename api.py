@@ -43,16 +43,53 @@ async def check_knowledge_base_status():
 
 # 创建知识库
 @app.post("/knowledge-base/create")
-async def create_knowledge_base():
+async def create_knowledge_base(collection_name: str = None):
     """
     创建知识库（集合）
     """
     try:
-        result = kb_service.create_knowledge_base()
+        result = kb_service.create_knowledge_base(collection_name)
         if result:
             return {"success": True, "message": f"知识库创建成功"}
         else:
             raise HTTPException(status_code=500, detail="知识库创建失败")
+    except KnowledgeBaseError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 获取知识库列表
+@app.get("/knowledge-base/list")
+async def list_knowledge_bases():
+    """
+    获取知识库列表
+    """
+    try:
+        knowledge_bases = kb_service.list_knowledge_bases()
+        return {"success": True, "data": knowledge_bases}
+    except KnowledgeBaseError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 获取知识库信息
+@app.get("/knowledge-base/info")
+async def get_knowledge_base_info(collection_name: str):
+    """
+    获取知识库信息
+    """
+    try:
+        knowledge_base_info = kb_service.get_knowledge_base_info(collection_name)
+        return {"success": True, "data": knowledge_base_info}
+    except KnowledgeBaseError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 向知识库添加单个文档
+@app.post("/knowledge-base/add")
+async def add_document(question: str, answer: str, category: str):
+    """
+    向知识库添加单个文档
+    """
+    try:
+        document = {"question": question, "answer": answer, "category": category}
+        count = kb_service.add_documents([document])
+        return {"success": True, "message": f"成功添加 {count} 个文档", "count": count}
     except KnowledgeBaseError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-card p-6 transition-all duration-300 hover:shadow-card-hover;
+  }
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-all duration-300 flex items-center justify-center space-x-2;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary/90;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary/90;
+  }
+  .btn-danger {
+    @apply bg-danger text-white hover:bg-danger/90;
+  }
+  .btn-warning {
+    @apply bg-warning text-white hover:bg-warning/90;
+  }
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+  }
+  .input-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+  .textarea-field {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none;
+  }
+  .sidebar-item {
+    @apply flex items-center space-x-3 px-4 py-3 rounded-md transition-all duration-200 hover:bg-primary-light hover:text-primary;
+  }
+  .sidebar-item.active {
+    @apply bg-primary-light text-primary font-medium;
+  }
+  .badge {
+    @apply px-2 py-1 text-xs font-medium rounded-full;
+  }
+  .badge-primary {
+    @apply bg-primary-light text-primary;
+  }
+  .badge-secondary {
+    @apply bg-green-100 text-green-800;
+  }
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+}

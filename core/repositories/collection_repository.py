@@ -20,25 +20,27 @@ class CollectionRepository(CollectionInterface):
         )
         self.database_repository = DatabaseRepository()
     
-    def create_collection(self) -> bool:
+    def create_collection(self, collection_name: str = None) -> bool:
         """创建集合"""
         try:
             if not self.database_repository.create_database():
                 return False
             
-            if self.client.has_collection(collection_name=self.collection_name):
-                print(f"集合 '{self.collection_name}' 已存在")
+            target_collection_name = collection_name if collection_name else self.collection_name
+            
+            if self.client.has_collection(collection_name=target_collection_name):
+                print(f"集合 '{target_collection_name}' 已存在")
                 return True
             
             self.client.create_collection(
-                collection_name=self.collection_name,
+                collection_name=target_collection_name,
                 dimension=1024,  # 使用 Ollama 模型返回的实际维度 1024
                 primary_field_name="id",
                 vector_field_name="embedding",
                 metric_type="L2"
             )
             
-            print(f"集合 '{self.collection_name}' 创建成功")
+            print(f"集合 '{target_collection_name}' 创建成功")
             return True
         except Exception as e:
             print(f"创建集合失败：{e}")

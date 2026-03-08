@@ -3,3 +3,4 @@ env.md
 .idea
 __pycache__/
 .qoder
+front/node_modules
