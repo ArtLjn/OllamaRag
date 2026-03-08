@@ -1,0 +1,5 @@
+id,question,answer,category
+1,如何安装Milvus,可以使用Docker快速安装Milvus,数据库
+2,Milvus支持什么索引,Milvus支持IVF_FLAT HNSW等索引,数据库
+3,如何使用Ollama运行模型,使用命令 ollama run 模型名,AI工具
+4,向量数据库有什么用,用于语义搜索和RAG系统,AI
