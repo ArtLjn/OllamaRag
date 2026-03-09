@@ -50,8 +50,10 @@
         </div>
         <div class="flex space-x-3">
           <div class="relative">
-            <input type="text" v-model="searchKeyword" placeholder="搜索知识库" class="input-field pl-10">
-            <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" v-model="searchKeyword" placeholder="搜索知识库" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <i class="fa fa-search"></i>
+            </span>
           </div>
           <button @click="showCreateKbModal = true" class="btn btn-primary">
             <i class="fa fa-plus"></i>
@@ -109,7 +111,7 @@
                       <i class="fa fa-book text-primary"></i>
                     </div>
                     <div>
-                      <div class="text-sm font-medium text-gray-900">{{ kb.collection_name }}</div>
+                      <router-link :to="`/knowledge-base/${kb.collection_name}`" class="text-sm font-medium text-primary hover:underline">{{ kb.collection_name }}</router-link>
                       <div class="text-xs text-gray-500">{{ kb.description || '无描述' }}</div>
                     </div>
                   </div>
@@ -128,9 +130,9 @@
                     <button @click="editKnowledgeBase(kb.collection_name)" class="text-primary hover:text-primary/80">
                       <i class="fa fa-edit"></i>
                     </button>
-                    <button @click="viewKnowledgeBase(kb.collection_name)" class="text-gray-600 hover:text-gray-900">
+                    <router-link :to="`/knowledge-base/${kb.collection_name}`" class="text-gray-600 hover:text-gray-900">
                       <i class="fa fa-eye"></i>
-                    </button>
+                    </router-link>
                     <button @click="deleteKnowledgeBase(kb.collection_name)" class="text-danger hover:text-danger/80">
                       <i class="fa fa-trash"></i>
                     </button>

@@ -129,8 +129,10 @@
           <h3 class="text-lg font-semibold text-dark">知识库列表</h3>
           <div class="flex space-x-2">
             <div class="relative">
-              <input type="text" v-model="searchKeyword" placeholder="搜索知识库" class="input-field pl-10">
-              <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+              <input type="text" v-model="searchKeyword" placeholder="搜索知识库" class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+              <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <i class="fa fa-search"></i>
+              </span>
             </div>
             <button class="btn btn-outline">
               <i class="fa fa-filter"></i>
@@ -185,9 +187,9 @@
                     <button @click="editKnowledgeBase(kb.collection_name)" class="text-primary hover:text-primary/80">
                       <i class="fa fa-edit"></i>
                     </button>
-                    <button @click="viewKnowledgeBase(kb.collection_name)" class="text-gray-600 hover:text-gray-900">
+                    <router-link :to="`/knowledge-base/${kb.collection_name}`" class="text-gray-600 hover:text-gray-900">
                       <i class="fa fa-eye"></i>
-                    </button>
+                    </router-link>
                     <button @click="deleteKnowledgeBase(kb.collection_name)" class="text-danger hover:text-danger/80">
                       <i class="fa fa-trash"></i>
                     </button>
@@ -296,29 +298,10 @@ export default {
   name: 'AppDashboard',
   data() {
     return {
-      knowledgeBaseCount: 3,
-      documentCount: 12,
-      usageCount: 156,
-      knowledgeBases: [
-        {
-          collection_name: 'ollama_rag',
-          description: '默认知识库',
-          document_count: 5,
-          created_at: '2026-03-08 10:00'
-        },
-        {
-          collection_name: 'test_knowledge_base',
-          description: '测试知识库',
-          document_count: 0,
-          created_at: '2026-03-08 15:30'
-        },
-        {
-          collection_name: 'product_manual',
-          description: '产品手册',
-          document_count: 7,
-          created_at: '2026-03-07 14:20'
-        }
-      ],
+      knowledgeBaseCount: 0,
+      documentCount: 0,
+      usageCount: 0,
+      knowledgeBases: [],
       searchKeyword: '',
       showCreateKbModal: false,
       newKnowledgeBase: {
@@ -360,10 +343,13 @@ export default {
     },
     async loadKnowledgeBases() {
       try {
+        console.log('正在加载知识库列表...')
         const response = await axios.get('http://localhost:8000/knowledge-base/list')
+        console.log('API响应:', response.data)
         if (response.data.success) {
           this.knowledgeBases = response.data.data
           this.knowledgeBaseCount = response.data.data.length
+          console.log('知识库列表加载成功:', this.knowledgeBases)
         }
       } catch (error) {
         console.error('获取知识库列表失败:', error)

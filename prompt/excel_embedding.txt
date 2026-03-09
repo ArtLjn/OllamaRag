@@ -1,0 +1,65 @@
+请帮我实现一个Excel知识库导入系统，要求如下：
+
+功能需求：
+
+1. 用户上传xlsx文件
+2. 系统解析Excel
+3. 自动读取字段名
+4. 自动推断字段类型
+5. 生成数据schema
+
+示例Excel：
+
+| 名称 | 图片 | 描述 |
+|----|----|----|
+| cat吃饭 | cat.jpg | 灰白猫吃猫粮 |
+| dog吃骨头 | dog.jpg | 狗在啃骨头 |
+
+系统需要支持：
+
+1. 用户选择字段用于embedding
+例如：
+["名称","描述"]
+
+2. 或者用户提供模板：
+
+{{名称}} {{描述}}
+
+3. 系统根据字段或模板生成：
+
+embedding_content
+
+例如：
+
+"cat吃饭 灰白猫吃猫粮"
+
+4. 使用embedding模型生成向量：
+
+Qwen3-Embedding-0.6B
+
+5. 向量存入Milvus
+
+Milvus collection schema：
+
+id
+原始字段
+embedding_content
+vector
+
+技术要求：
+
+- 使用Python
+- Excel解析使用pandas
+- 模板引擎使用jinja2
+- 向量数据库使用Milvus
+- embedding通过API调用
+
+请输出：
+
+1. 完整代码
+2. Excel解析代码
+3. schema自动生成
+4. 字段合并实现
+5. embedding生成
+6. Milvus入库代码
+7. 搜索示例代码

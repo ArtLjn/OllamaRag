@@ -50,8 +50,10 @@
         </div>
         <div class="flex space-x-3">
           <div class="relative">
-            <input type="text" v-model="searchKeyword" placeholder="搜索文档" class="input-field pl-10">
-            <i class="fa fa-search absolute left-3 top-3 text-gray-400"></i>
+            <input type="text" v-model="searchKeyword" placeholder="搜索文档" class="w-48 px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <i class="fa fa-search"></i>
+            </span>
           </div>
           <button @click="showAddDocModal = true" class="btn btn-primary">
             <i class="fa fa-plus"></i>

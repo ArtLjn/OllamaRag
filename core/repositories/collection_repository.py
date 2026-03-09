@@ -60,29 +60,36 @@ class CollectionRepository(CollectionInterface):
             print(f"删除集合失败: {e}")
             raise KnowledgeBaseError(f"删除集合失败: {e}")
     
-    def add_documents(self, documents: List[Dict]) -> int:
+    def add_documents(self, documents: List[Dict], collection_name: str = None) -> int:
         """添加文档"""
         try:
-            if not self.client.has_collection(collection_name=self.collection_name):
-                print(f"集合 '{self.collection_name}' 不存在，请先创建")
+            target_collection_name = collection_name if collection_name else self.collection_name
+            
+            if not self.client.has_collection(collection_name=target_collection_name):
+                print(f"集合 '{target_collection_name}' 不存在，请先创建")
                 return 0
             
             data = []
-            for doc in documents:
-                data.append({
-                    "id": len(data) + 1,  # 简单的 ID 生成
-                    "question": doc['question'],
-                    "answer": doc['answer'],
-                    "category": doc['category'],
+            for i, doc in enumerate(documents):
+                # 构建文档数据，支持动态字段
+                doc_data = {
+                    "id": doc.get('id', i + 1),  # 使用文档中的 ID 或生成新 ID
                     "embedding": doc.get('embedding', [])
-                })
+                }
+                
+                # 添加其他字段
+                for key, value in doc.items():
+                    if key not in ['id', 'embedding']:
+                        doc_data[key] = value
+                
+                data.append(doc_data)
             
             if data:
                 result = self.client.insert(
-                    collection_name=self.collection_name,
+                    collection_name=target_collection_name,
                     data=data
                 )
-                print(f"成功添加 {len(result)} 个文档到集合")
+                print(f"成功添加 {len(result)} 个文档到集合 '{target_collection_name}'")
                 return len(result)
             else:
                 print("没有有效文档可添加")
@@ -90,6 +97,39 @@ class CollectionRepository(CollectionInterface):
         except Exception as e:
             print(f"添加文档失败: {e}")
             raise KnowledgeBaseError(f"添加文档失败: {e}")
+    
+    def search_similar(self, collection_name: str, query_vector: List[float], top_k: int = 5) -> List[Dict]:
+        """搜索相似文档"""
+        try:
+            if not self.client.has_collection(collection_name=collection_name):
+                print(f"集合 '{collection_name}' 不存在")
+                return []
+            
+            # 执行相似性搜索
+            results = self.client.search(
+                collection_name=collection_name,
+                data=[query_vector],
+                limit=top_k,
+                output_fields=["*"]  # 返回所有字段
+            )
+            
+            # 处理搜索结果
+            search_results = []
+            for result in results[0]:  # 只处理第一个查询的结果
+                item = {
+                    "id": result.id,
+                    "distance": result.distance,
+                    "score": 1 / (1 + result.distance)  # 转换为相似度分数
+                }
+                # 添加其他字段
+                for field, value in result.entity.items():
+                    item[field] = value
+                search_results.append(item)
+            
+            return search_results
+        except Exception as e:
+            print(f"搜索相似文档失败: {e}")
+            raise KnowledgeBaseError(f"搜索相似文档失败: {e}")
     
     def check_collection(self) -> Dict:
         """检查集合状态"""
