@@ -31,9 +31,9 @@ class KnowledgeBaseService:
         """创建知识库"""
         return self.collection_repository.create_collection(collection_name)
     
-    def delete_knowledge_base(self) -> bool:
+    def delete_knowledge_base(self, collection_name: str = None) -> bool:
         """删除知识库"""
-        return self.collection_repository.delete_collection()
+        return self.collection_repository.delete_collection(collection_name)
     
     def add_documents(self, documents: List[Dict]) -> int:
         """添加文档"""

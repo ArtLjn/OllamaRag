@@ -2,6 +2,7 @@
 
 # 服务器配置
 SERVER_IP = "10.217.163.18"
+# SERVER_IP = "10.217.163.200"
 
 # Ollama 配置
 OLLAMA_CONFIG = {

@@ -1,0 +1,43 @@
+{
+    "autoId": false,
+    "enabledDynamicField": true,
+    "fields": [
+        {
+            "fieldName": "id",
+            "dataType": "Int64",
+            "isPrimary": true
+        },
+        {
+            "fieldName": "embedding",
+            "dataType": "FloatVector",
+            "elementTypeParams": {
+                "dim": "1024"
+            }
+        },
+        {
+            "fieldName": "content",
+            "dataType": "VarChar",
+            "elementTypeParams": {
+                "max_length": "65535"
+            }
+        },
+        {
+            "fieldName": "file_id",
+            "dataType": "VarChar",
+            "elementTypeParams": {
+                "max_length": "64"
+            }
+        },
+        {
+            "fieldName": "file_name",
+            "dataType": "VarChar",
+            "elementTypeParams": {
+                "max_length": "256"
+            }
+        },
+        {
+            "fieldName": "chunk_index",
+            "dataType": "Int32"
+        }
+    ]
+}

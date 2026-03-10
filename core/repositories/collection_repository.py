@@ -1,5 +1,5 @@
 # 集合存储库
-from pymilvus import MilvusClient
+from pymilvus import MilvusClient, DataType
 from typing import List, Dict
 from core.configs.settings import MILVUS_CONFIG
 from core.exceptions.custom_exceptions import KnowledgeBaseError
@@ -31,12 +31,25 @@ class CollectionRepository(CollectionInterface):
             if self.client.has_collection(collection_name=target_collection_name):
                 print(f"集合 '{target_collection_name}' 已存在")
                 return True
+
+            # 使用 MilvusClient.create_schema() 方法创建 schema
+            schema = self.client.create_schema(
+                auto_id=False,
+                enable_dynamic_field=True,
+            )
             
+            # 添加字段
+            schema.add_field(field_name="id", datatype=DataType.INT64, is_primary=True)
+            schema.add_field(field_name="embedding", datatype=DataType.FLOAT_VECTOR, dim=1024)
+            schema.add_field(field_name="content", datatype=DataType.VARCHAR, max_length=65535)
+            schema.add_field(field_name="file_id", datatype=DataType.VARCHAR, max_length=64)
+            schema.add_field(field_name="file_name", datatype=DataType.VARCHAR, max_length=256)
+            schema.add_field(field_name="chunk_index", datatype=DataType.INT32)
+            
+            # 创建集合
             self.client.create_collection(
                 collection_name=target_collection_name,
-                dimension=1024,  # 使用 Ollama 模型返回的实际维度 1024
-                primary_field_name="id",
-                vector_field_name="embedding",
+                schema=schema,
                 metric_type="L2"
             )
             
@@ -46,15 +59,17 @@ class CollectionRepository(CollectionInterface):
             print(f"创建集合失败：{e}")
             raise KnowledgeBaseError(f"创建集合失败：{e}")
     
-    def delete_collection(self) -> bool:
+    def delete_collection(self, collection_name: str = None) -> bool:
         """删除集合"""
         try:
-            if not self.client.has_collection(collection_name=self.collection_name):
-                print(f"集合 '{self.collection_name}' 不存在")
+            target_collection_name = collection_name if collection_name else self.collection_name
+            
+            if not self.client.has_collection(collection_name=target_collection_name):
+                print(f"集合 '{target_collection_name}' 不存在")
                 return True
             
-            self.client.drop_collection(collection_name=self.collection_name)
-            print(f"集合 '{self.collection_name}' 删除成功")
+            self.client.drop_collection(collection_name=target_collection_name)
+            print(f"集合 '{target_collection_name}' 删除成功")
             return True
         except Exception as e:
             print(f"删除集合失败: {e}")

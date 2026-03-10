@@ -36,6 +36,11 @@ async def parse_excel(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 # 导入 Excel 数据到知识库
+'''
+前端返回一个embedding合并列表比如 ['名称','描述'] 字段进行数据合并，这时候我们处理
+数据的时候需要将两个数据进行合并获得向量存入 content_embedding 向量字段
+其余字段数据照常存储，只不过总价一个 content_embedding 向量字段
+'''
 @router.post("/import")
 async def import_excel(
     file: UploadFile = File(...),
@@ -71,7 +76,7 @@ async def import_excel(
         data_with_vectors = excel_service.generate_embeddings(data_with_embedding_content)
         
         # 导入数据到 Milvus
-        count = excel_service.import_to_milvus(data_with_vectors, collection_name)
+        count = excel_service.import_to_milvus(data_with_vectors, collection_name, file.filename)
         
         # 删除临时文件
         os.unlink(temp_file_path)

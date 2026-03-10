@@ -336,21 +336,17 @@
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">标题列</label>
-              <select v-model="formData.titleColumn" class="input-field">
-                <option v-for="field in tableStructure.fields" :key="field.name" :value="field.name">
-                  {{ field.name }}
-                </option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">内容列</label>
-              <select v-model="formData.contentColumn" class="input-field">
-                <option v-for="field in tableStructure.fields" :key="field.name" :value="field.name">
-                  {{ field.name }}
-                </option>
-              </select>
+              <label class="block text-sm font-medium text-gray-700 mb-1">用于生成向量的字段</label>
+              <div class="p-3 bg-gray-50 rounded border border-gray-200">
+                <div v-if="selectedColumns.length > 0" class="flex flex-wrap gap-2">
+                  <span v-for="(column, index) in selectedColumns" :key="index" class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                    {{ column }}
+                  </span>
+                </div>
+                <div v-else class="text-gray-500 text-sm">
+                  请在步骤 2 中选择要用于生成向量的字段
+                </div>
+              </div>
             </div>
             
             <div class="flex justify-between">
@@ -404,9 +400,7 @@ export default {
       previewData: null,
       formData: {
         knowledgeBaseName: '',
-        dimension: '1024',
-        titleColumn: '',
-        contentColumn: ''
+        dimension: '1024'
       }
     }
   },
@@ -503,7 +497,7 @@ export default {
         const formData = new FormData()
         formData.append('file', this.selectedFile)
         formData.append('collection_name', this.formData.knowledgeBaseName)
-        formData.append('fields', `${this.formData.titleColumn},${this.formData.contentColumn}`)
+        formData.append('fields', this.selectedColumns.join(','))
 
         const response = await fetch('http://localhost:8000/excel/import', {
           method: 'POST',
@@ -541,9 +535,7 @@ export default {
       this.previewData = null
       this.formData = {
         knowledgeBaseName: '',
-        dimension: '1024',
-        titleColumn: '',
-        contentColumn: ''
+        dimension: '1024'
       }
       this.importResult = null
     }

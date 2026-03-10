@@ -74,12 +74,12 @@ async def add_document(question: str, answer: str, category: str):
 
 # 删除知识库
 @router.delete("/delete")
-async def delete_knowledge_base():
+async def delete_knowledge_base(collection_name: str = None):
     """
     删除知识库（集合）
     """
     try:
-        result = kb_service.delete_knowledge_base()
+        result = kb_service.delete_knowledge_base(collection_name)
         if result:
             return {"success": True, "message": f"知识库删除成功"}
         else:

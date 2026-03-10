@@ -128,21 +128,30 @@ class ExcelImportService:
             print(f"生成 embedding 向量失败: {e}")
             raise KnowledgeBaseError(f"生成 embedding 向量失败: {e}")
     
-    def import_to_milvus(self, data: List[Dict], collection_name: str) -> int:
+    def import_to_milvus(self, data: List[Dict], collection_name: str, file_name: str = 'Excel File') -> int:
         """导入数据到 Milvus"""
         try:
+            import uuid
+            
             # 确保集合存在
             self.collection_repository.create_collection(collection_name)
             
             # 准备数据
             milvus_data = []
+            file_id = str(uuid.uuid4())  # 生成文件唯一标识
+            
             for i, item in enumerate(data):
+                # 提取原始字段作为 metadata
+                metadata = {k: v for k, v in item.items() if k not in ['vector', 'embedding_content']}
+                
                 milvus_item = {
                     'id': i + 1,
                     'embedding': item.get('vector', []),
-                    'embedding_content': item.get('embedding_content', ''),
-                    # 添加原始字段
-                    **{k: v for k, v in item.items() if k not in ['vector', 'embedding_content']}
+                    'content': item.get('embedding_content', ''),  # 重命名为 content
+                    'file_id': file_id,
+                    'file_name': file_name,  # 使用传入的文件名
+                    'chunk_index': i,
+                    'metadata': metadata  # 动态扩展字段
                 }
                 milvus_data.append(milvus_item)
             

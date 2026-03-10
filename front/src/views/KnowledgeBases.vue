@@ -1,5 +1,32 @@
 <template>
   <div class="flex">
+    <!-- 消息提示 -->
+    <div v-if="toast.show" :class="['toast', toast.type === 'success' ? 'toast-success' : 'toast-error']">
+      {{ toast.message }}
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-sm w-full mx-4">
+        <div class="p-6 text-center">
+          <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+            <i class="fa fa-exclamation-triangle text-red-500 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-dark mb-2">删除知识库</h3>
+          <p class="text-gray-500 mb-6">确定要删除知识库 <span class="font-medium text-dark">{{ deleteTargetName }}</span> 吗？此操作不可恢复。</p>
+          <div class="flex space-x-3">
+            <button @click="showDeleteModal = false" class="btn btn-outline flex-1">
+              取消
+            </button>
+            <button @click="confirmDelete" class="btn btn-danger flex-1" :disabled="deleting">
+              <span v-if="deleting"><i class="fa fa-spinner fa-spin"></i> 删除中...</span>
+              <span v-else>确认删除</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 侧边栏 -->
     <aside class="w-64 bg-white shadow-sm fixed h-full left-0 top-0 z-10">
       <div class="p-4 border-b">
@@ -133,7 +160,7 @@
                     <router-link :to="`/knowledge-base/${kb.collection_name}`" class="text-gray-600 hover:text-gray-900">
                       <i class="fa fa-eye"></i>
                     </router-link>
-                    <button @click="deleteKnowledgeBase(kb.collection_name)" class="text-danger hover:text-danger/80">
+                    <button @click="showDeleteConfirm(kb.collection_name)" class="text-danger hover:text-danger/80">
                       <i class="fa fa-trash"></i>
                     </button>
                   </div>
@@ -252,6 +279,14 @@ export default {
       selectedKnowledgeBase: null,
       searchKeyword: '',
       showCreateKbModal: false,
+      showDeleteModal: false,
+      deleteTargetName: '',
+      deleting: false,
+      toast: {
+        show: false,
+        message: '',
+        type: 'success'
+      },
       newKnowledgeBase: {
         name: '',
         description: '',
@@ -330,10 +365,42 @@ export default {
     editKnowledgeBase(collectionName) {
       console.log(`编辑知识库 ${collectionName}`)
     },
-    deleteKnowledgeBase(collectionName) {
-      if (confirm(`确定要删除知识库 ${collectionName} 吗？`)) {
-        console.log(`删除知识库 ${collectionName}`)
+    showDeleteConfirm(collectionName) {
+      this.deleteTargetName = collectionName
+      this.showDeleteModal = true
+    },
+    showToast(message, type = 'success') {
+      this.toast.message = message
+      this.toast.type = type
+      this.toast.show = true
+      setTimeout(() => {
+        this.toast.show = false
+      }, 3000)
+    },
+    async confirmDelete() {
+      const collectionName = this.deleteTargetName
+      this.deleting = true
+      try {
+        console.log(`删除知识库 ${collectionName}...`)
+        const response = await axios.delete(`http://localhost:8000/knowledge-base/delete?collection_name=${collectionName}`)
+        if (response.data.success) {
+          console.log('知识库删除成功')
+          this.showToast('知识库删除成功', 'success')
+          this.showDeleteModal = false
+          this.loadKnowledgeBases()
+        } else {
+          console.log('知识库删除失败')
+          this.showToast('知识库删除失败', 'error')
+        }
+      } catch (error) {
+        console.error('删除知识库失败:', error)
+        this.showToast('删除知识库失败，请重试', 'error')
+      } finally {
+        this.deleting = false
       }
+    },
+    deleteKnowledgeBase(collectionName) {
+      console.log(`删除知识库 ${collectionName}`)
     }
   },
   mounted() {
@@ -344,4 +411,35 @@ export default {
 
 <style scoped>
 /* 组件特定样式 */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast-success {
+  background-color: #10b981;
+}
+
+.toast-error {
+  background-color: #ef4444;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 </style>
