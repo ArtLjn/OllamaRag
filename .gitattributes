@@ -66,6 +66,3 @@ __pycache__/ binary
 # OS files
 .DS_Store binary
 Thumbs.db binary
-*.js linguist-language=python
-*.css linguist-language=python
-*.html linguist-language=python
