@@ -1,0 +1,68 @@
+# .gitattributes for Python project
+
+# Set the default behavior for all files
+* text=auto
+
+# Python files
+*.py text eol=lf
+*.pyi text eol=lf
+
+# Test files
+*.pyc binary
+__pycache__/ binary
+
+# Documentation
+*.md text eol=lf
+*.rst text eol=lf
+
+# Configuration files
+*.ini text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Data files
+*.csv text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+
+# Ignore generated files
+*.pyo binary
+*.pyd binary
+*.so binary
+
+# Executables
+*.exe binary
+*.bat text eol=crlf
+*.sh text eol=lf
+
+# Image files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf
+
+# Archive files
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.tar.xz binary
+
+# Log files
+*.log text eol=lf
+
+# Environment files
+.env text eol=lf
+.env.* text eol=lf
+
+# IDE files
+.vscode/ text
+.idea/ text
+*.swp binary
+*.swo binary
+
+# OS files
+.DS_Store binary
+Thumbs.db binary
