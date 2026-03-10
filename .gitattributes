@@ -70,3 +70,4 @@ Thumbs.db binary
 *.js linguist-language=python
 *.css linguist-language=python
 *.html linguist-language=python
+*.vue linguist-language=python
